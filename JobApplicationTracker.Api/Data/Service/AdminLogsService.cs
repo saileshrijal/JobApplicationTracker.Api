@@ -8,7 +8,7 @@ using System.Data;
 
 namespace JobApplicationTracker.Api.Data.Service;
 
-public class JobTypeService : IJobTypeService
+public class AdminLogsService : IAdminLogsService
 {
     public async Task<IEnumerable<JobTypeDto>> GetAllJobTypesAsync()
     {

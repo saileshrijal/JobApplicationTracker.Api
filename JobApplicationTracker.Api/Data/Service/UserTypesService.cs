@@ -8,92 +8,98 @@ using System.Data;
 
 namespace JobApplicationTracker.Api.Data.Service;
 
-public class JobTypeService : IJobTypeService
+public class UserTypesService : IUsersTypeService
 {
-    public async Task<IEnumerable<JobTypeDto>> GetAllJobTypesAsync()
+    public async Task<IEnumerable<UserTypesDto>> GetAllUserTypesAsync()
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
 
         var sql = """
-                  SELECT JobTypeId, 
+                  SELECT UserTypeId, 
                          TypeName, 
                          Description 
-                  FROM JobTypes
+                  FROM UserTypes
                   """;
 
-        return await connection.QueryAsync<JobTypeDto>(sql).ConfigureAwait(false);
+        return await connection.QueryAsync<UserTypesDto>(sql).ConfigureAwait(false);
     }
 
-    public async Task<JobTypeDto> GetJobTypeByIdAsync(int jobTypeId)
+    public async Task<UserTypesDto> GetUserTypesByIdAsync(int userTypesId)
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
-        // write the SQL query to fetch a job type by ID
+
+        // write the SQL query to fetch a user type by ID
         var sql = """
-                  SELECT JobTypeId, 
+                  SELECT UserTypeId, 
                          TypeName, 
                          Description 
-                  FROM JobTypes
-                  WHERE JobTypeId = ?
+                  FROM UserTypes
+                  WHERE UserTypesId = @UserTypesId
                   """;
+
 
         var parameters = new DynamicParameters();
-        parameters.Add("@JobTypeId", jobTypeId, DbType.Int32);
+        parameters.Add("@UserTypeId", userTypesId, DbType.Int32);
 
-        return await connection.QueryFirstOrDefaultAsync<JobTypeDto>(sql, parameters).ConfigureAwait(false);
+        return await connection.QueryFirstOrDefaultAsync<UserTypesDto>(sql, parameters).ConfigureAwait(false);
     }
-    public async Task<ResponseDto> SubmitJobTypeAsync(JobTypeDto jobTypeDto)
+    public async Task<ResponseDto> SubmitUserTypesAsync(UserTypesDto userTypesDto)
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
 
         string sql;
 
-        if (jobTypeDto.JobTypeId <= 0)
+        if (userTypesDto.UserTypeId <= 0)
         {
-            // Insert new job type (assumes JobTypeId is auto-incremented)
+            // Insert new skill (assumes user type id is auto-incremented)
             sql = """
-            INSERT INTO JobTypes (TypeName, Description)
+            INSERT INTO UserTypes (TypeName, Description)
             VALUES (@TypeName, @Description)
             """;
         }
         else
         {
-            // Update existing job type
+            // Update existing user type
             sql = """
-            UPDATE JobTypes
+            UPDATE UserTypes
             SET TypeName = TypeName,
-                Description = Description
-            WHERE JobTypeId = JobTypeId
+                Description= Description
+            WHERE UserTypeId = UserTypeId
             """;
         }
 
         var parameters = new DynamicParameters();
-        parameters.Add("JobTypeId", jobTypeDto.JobTypeId, DbType.Int32);
-        parameters.Add("TypeName", jobTypeDto.TypeName, DbType.String);
-        parameters.Add("Description", jobTypeDto.Description, DbType.String);
+        parameters.Add("UserTypeId", userTypesDto.UserTypeId, DbType.Int32);
+        parameters.Add("TypeName", userTypesDto.TypeName, DbType.String);
+        parameters.Add("Description", userTypesDto.Description, DbType.String);
 
         var affectedRows = await connection.ExecuteAsync(sql, parameters).ConfigureAwait(false);
 
         return new ResponseDto
         {
             IsSuccess = affectedRows > 0,
-            Message = affectedRows > 0 ? "Job type submitted successfully." : "Failed to submit job type."
+            Message = affectedRows > 0 ? "Usertype submitted successfully." : "Failed to submit user type."
         };
     }
 
 
 
-    public async Task<ResponseDto> DeleteJobTypeAsync(int jobTypeId)
+    public async Task<ResponseDto> DeleteUserTypesAsync(int userTypesId)
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
-        // write the SQL query to delete a job type by ID
-        var sql = """DELETE FROM JobTypes WHERE JobTypeId = JobTypeId""";
+        // write the SQL query to delete user type by ID
+
+        var sql = """
+                DELETE FROM UserTypes 
+                WHERE UserTypeId = UserTypeId
+                """;
 
         var parameters = new DynamicParameters();
-        parameters.Add("@JobTypeId", jobTypeId, DbType.Int32);
+        parameters.Add("@UserTypeId", userTypesId, DbType.Int32);
 
         var affectedRows = await connection.ExecuteAsync(sql, parameters).ConfigureAwait(false);
 
@@ -102,14 +108,14 @@ public class JobTypeService : IJobTypeService
             return new ResponseDto
             {
                 IsSuccess = false,
-                Message = "Failed to delete job type."
+                Message = "Failed to delete User Types."
             };
         }
 
         return new ResponseDto
         {
             IsSuccess = true,
-            Message = "Job type deleted successfully."
+            Message = "User types deleted successfully."
         };
     }
 }

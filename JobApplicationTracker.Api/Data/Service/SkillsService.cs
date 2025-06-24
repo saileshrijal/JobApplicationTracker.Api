@@ -8,71 +8,72 @@ using System.Data;
 
 namespace JobApplicationTracker.Api.Data.Service;
 
-public class JobTypeService : IJobTypeService
+public class SkillsService : ISkillsService
 {
-    public async Task<IEnumerable<JobTypeDto>> GetAllJobTypesAsync()
+    public async Task<IEnumerable<SkillsDto>> GetAllSkillsAsync()
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
 
         var sql = """
-                  SELECT JobTypeId, 
-                         TypeName, 
-                         Description 
-                  FROM JobTypes
+                  SELECT SkillId, 
+                         SkillName, 
+                         Category 
+                  FROM Skills
                   """;
 
-        return await connection.QueryAsync<JobTypeDto>(sql).ConfigureAwait(false);
+        return await connection.QueryAsync<SkillsDto>(sql).ConfigureAwait(false);
     }
 
-    public async Task<JobTypeDto> GetJobTypeByIdAsync(int jobTypeId)
+    public async Task<SkillsDto> GetSkillsByIdAsync(int skillId)
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
-        // write the SQL query to fetch a job type by ID
+        // write the SQL query to fetch a skill by ID
         var sql = """
-                  SELECT JobTypeId, 
-                         TypeName, 
-                         Description 
-                  FROM JobTypes
-                  WHERE JobTypeId = ?
+                  SELECT SkillId, 
+                         SkillName, 
+                         Category 
+                  FROM Skills
+                  WHERE SkillId = @SkillId
                   """;
+        
 
         var parameters = new DynamicParameters();
-        parameters.Add("@JobTypeId", jobTypeId, DbType.Int32);
+        parameters.Add("@SkillId", skillId, DbType.Int32);
 
-        return await connection.QueryFirstOrDefaultAsync<JobTypeDto>(sql, parameters).ConfigureAwait(false);
+        return await connection.QueryFirstOrDefaultAsync<SkillsDto>(sql, parameters).ConfigureAwait(false);
     }
-    public async Task<ResponseDto> SubmitJobTypeAsync(JobTypeDto jobTypeDto)
+    public async Task<ResponseDto> SubmitSkillsAsync(SkillsDto skillsDto)
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
 
         string sql;
 
-        if (jobTypeDto.JobTypeId <= 0)
+        if (skillsDto.SkillId <= 0)
         {
-            // Insert new job type (assumes JobTypeId is auto-incremented)
+            // Insert new skill (assumes JobTypeId is auto-incremented)
             sql = """
-            INSERT INTO JobTypes (TypeName, Description)
-            VALUES (@TypeName, @Description)
+            INSERT INTO Skills (SkillName, Category)
+            VALUES (@SkillName, @Category)
             """;
         }
         else
         {
-            // Update existing job type
+            // Update existing skill
             sql = """
-            UPDATE JobTypes
-            SET TypeName = TypeName,
-                Description = Description
-            WHERE JobTypeId = JobTypeId
+            UPDATE Skills
+            SET SkillName = SkillName,
+                Category = Category
+            WHERE SkillId = SkillId
             """;
         }
 
         var parameters = new DynamicParameters();
-        parameters.Add("JobTypeId", jobTypeDto.JobTypeId, DbType.Int32);
-        parameters.Add("TypeName", jobTypeDto.TypeName, DbType.String);
-        parameters.Add("Description", jobTypeDto.Description, DbType.String);
+        parameters.Add("SkillId", skillsDto.SkillId, DbType.Int32);
+        parameters.Add("SkillName", skillsDto.SkillName, DbType.String);
+        parameters.Add("Description", skillsDto.Category, DbType.String);
 
         var affectedRows = await connection.ExecuteAsync(sql, parameters).ConfigureAwait(false);
 
@@ -85,15 +86,15 @@ public class JobTypeService : IJobTypeService
 
 
 
-    public async Task<ResponseDto> DeleteJobTypeAsync(int jobTypeId)
+    public async Task<ResponseDto> DeleteSkillsAsync(int skillId)
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
-        // write the SQL query to delete a job type by ID
-        var sql = """DELETE FROM JobTypes WHERE JobTypeId = JobTypeId""";
+        // write the SQL query to delete askill by ID
+        var sql = """DELETE FROM Skills WHERE SkillId = SkillId""";
 
         var parameters = new DynamicParameters();
-        parameters.Add("@JobTypeId", jobTypeId, DbType.Int32);
+        parameters.Add("@SkillId", skillId, DbType.Int32);
 
         var affectedRows = await connection.ExecuteAsync(sql, parameters).ConfigureAwait(false);
 
@@ -102,14 +103,14 @@ public class JobTypeService : IJobTypeService
             return new ResponseDto
             {
                 IsSuccess = false,
-                Message = "Failed to delete job type."
+                Message = "Failed to delete Skill."
             };
         }
 
         return new ResponseDto
         {
             IsSuccess = true,
-            Message = "Job type deleted successfully."
+            Message = "Skill deleted successfully."
         };
     }
 }
