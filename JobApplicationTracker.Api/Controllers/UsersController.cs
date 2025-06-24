@@ -1,0 +1,50 @@
+using JobApplicationTracker.Api.Data.Dto;
+using JobApplicationTracker.Api.Data.Interface;
+using Microsoft.AspNetCore.Mvc;
+
+namespace JobApplicationTracker.Api.Controllers;
+
+[Route("api/users")]
+public class UsersController(IUsersService userService) : ControllerBase
+{
+    [HttpGet]
+    [Route("/getallusers")]
+    public async Task<IActionResult> GetAllJobTypes()
+    {
+        var users = await userService.GetAllUsersAsync();
+        return Ok(users);
+    }
+
+    [HttpGet]
+    [Route("/getusersbyid")]
+    public async Task<IActionResult> GetUsersById(int id)
+    {
+        var userr = await userService.GetUsersByIdAsync(id);
+        if (userr == null)
+        {
+            return NotFound();
+        }
+        return Ok(userr);
+    }
+
+    [HttpPost]
+    [Route("/submitusers")]
+    public async Task<IActionResult> SubmitUsers([FromBody] UsersDto usersDto)
+    {
+        if (usersDto == null)
+        {
+            return BadRequest();
+        }
+
+        var response = await userService.SubmitUsersAsync(usersDto);
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
+    }
+
+    [HttpDelete]
+    [Route("/deleteuser")]
+    public async Task<IActionResult> DeleteJobType(int id)
+    {
+        var response = await userService.DeleteUsersAsync(id);
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
+    }
+}
