@@ -10,15 +10,15 @@ namespace JobApplicationTracker.Api.Data.Service;
 
 public class ApplicationsService : IJobApplicationService
 {
-    public async Task<IEnumerable<JobApplicationDto>> GetAllJobApplicationsAsync()
+    public async Task<IEnumerable<JobApplicationDto>> GetAllJobApplicationAsync()
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
 
         var sql = """
-              SELECT ApplicationId, 
+              SELECT JobApplicationId, 
                      JobId, 
-                     JobSeekerUserId, 
+                     JobSeekerId, 
                      CoverLetter, 
                      StatusId, 
                      AppliedAt, 
@@ -33,18 +33,20 @@ public class ApplicationsService : IJobApplicationService
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
+
         // write the SQL query to fetch a job application by ID
         var sql = """
-                  SELECT ApplicationId,
+                  SELECT   JobApplicationId,
                            JobId,
-                            JobSeekerUserId,
-                            CoverLetter,
-                            StatusId,
-                            AppliedAt,
-                            UpdatedAt
+                           JobSeekerId,
+                           CoverLetter,
+                           StatusId,
+                           AppliedAt,
+                           UpdatedAt
 
                        
                   FROM JobApplications
+
                   WHERE ApplicationId = @JobApplicationId
                   """;
        
@@ -60,34 +62,37 @@ public class ApplicationsService : IJobApplicationService
 
         string sql;
 
-        if (jobApplicationDto.ApplicationId <= 0)
+        if (jobApplicationDto.JobApplicationId <= 0)
         {
             // Insert new job application (assumes ApplicationId is auto-incremented)
             sql = """
-        INSERT INTO Applications (JobId, JobSeekerUserId, CoverLetter, StatusId, AppliedAt, UpdatedAt)
-        VALUES (@JobId, @JobSeekerUserId, @CoverLetter, @StatusId, @AppliedAt, @UpdatedAt);
-        SELECT CAST(SCOPE_IDENTITY() AS INT);
-        """;
+                    INSERT INTO Applications (JobId, JobSeekerUserId, CoverLetter, StatusId, AppliedAt, UpdatedAt)
+
+                    VALUES (@JobId, @JobSeekerUserId, @CoverLetter, @StatusId, @AppliedAt, @UpdatedAt);
+
+                    SELECT CAST(SCOPE_IDENTITY() AS INT);
+
+                    """;
         }
         else
         {
             // Update existing job application
             sql = """
-        UPDATE Applications
-        SET 
-            JobId = @JobId,
-            JobSeekerUserId = @JobSeekerUserId,
-            CoverLetter = @CoverLetter,
-            StatusId = @StatusId,
-            UpdatedAt = @UpdatedAt
-        WHERE ApplicationId = @ApplicationId
-        """;
+                    UPDATE Applications
+                    SET 
+                        JobId = @JobId,
+                        JobSeekerId = @JobSeekerId,
+                        CoverLetter = @CoverLetter,
+                        StatusId = @StatusId,
+                        UpdatedAt = @UpdatedAt
+                    WHERE ApplicationId = @ApplicationId
+                    """;
         }
 
         var parameters = new DynamicParameters();
-        parameters.Add("@ApplicationId", jobApplicationDto.ApplicationId, DbType.Int32);
+        parameters.Add("@JobApplicationId", jobApplicationDto.JobApplicationId, DbType.Int32);
         parameters.Add("@JobId", jobApplicationDto.JobId, DbType.Int32);
-        parameters.Add("@JobSeekerUserId", jobApplicationDto.JobSeekerId, DbType.Int32);
+        parameters.Add("@JobSeekerId", jobApplicationDto.JobSeekerId, DbType.Int32);
         parameters.Add("@CoverLetter", jobApplicationDto.CoverLetter, DbType.String);
         parameters.Add("@StatusId", jobApplicationDto.StatusId, DbType.Int32);
         parameters.Add("@AppliedAt", DateTime.UtcNow, DbType.DateTime);
@@ -97,11 +102,11 @@ public class ApplicationsService : IJobApplicationService
 
         var affectedRows = 0;
 
-        if (jobApplicationDto.ApplicationId <= 0)
+        if (jobApplicationDto.JobApplicationId <= 0)
         {
             var newId = await connection.QuerySingleAsync<int>(sql, parameters).ConfigureAwait(false);
             affectedRows = newId > 0 ? 1 : 0;
-            jobApplicationDto.ApplicationId = newId; // Set the ID for the newly inserted record
+            jobApplicationDto.JobApplicationId = newId; // Set the ID for the newly inserted record
         }
         else
         {
@@ -122,6 +127,7 @@ public class ApplicationsService : IJobApplicationService
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
+
         // write the SQL query to delete a job application by ID
         var sql = """DELETE FROM JobApplications WHERE JobApplicationId = JobApplicationId""";
 

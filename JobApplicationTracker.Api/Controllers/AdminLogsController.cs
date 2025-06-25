@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace JobApplicationTracker.Api.Controllers;
 
 [Route("api/AdminLogs")]
-public class AdminLogsController(IAdminLogService adminLogService) : ControllerBase
+public class AdminLogsController(IAdminLogsService adminLogService) : ControllerBase
 {
     [HttpGet]
     [Route("/getallAdminLogs")]

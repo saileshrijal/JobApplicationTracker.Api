@@ -9,5 +9,5 @@ public interface ICompaniesService
     Task<ResponseDto> SubmitCompaniesAsync(CompaniesDto companiesDto);
 
     Task<ResponseDto> DeleteCompanyAsync(int companiesId);
-    Task<object?> DeleteCompaniesAsync(int id);
+    
 }

@@ -3,6 +3,7 @@ using JobApplicationTracker.Api.Configuration;
 using JobApplicationTracker.Api.Data.Dto;
 using JobApplicationTracker.Api.Data.Interface;
 using Microsoft.Data.SqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data;
 
@@ -10,90 +11,116 @@ namespace JobApplicationTracker.Api.Data.Service;
 
 public class AdminLogsService : IAdminLogsService
 {
-    public async Task<IEnumerable<JobTypeDto>> GetAllJobTypesAsync()
+    public async Task<IEnumerable<AdminLogsDto>> GetAllAdminLogsAsync()
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
 
         var sql = """
-                  SELECT JobTypeId, 
-                         TypeName, 
-                         Description 
-                  FROM JobTypes
-                  """;
+              SELECT LogId, 
+                     AdminId,
+                     ActionId, 
+                     Description,
+                     ActionDate
+              FROM AdminLogs
+              """;
 
-        return await connection.QueryAsync<JobTypeDto>(sql).ConfigureAwait(false);
+        return await connection.QueryAsync<AdminLogsDto>(sql).ConfigureAwait(false);
     }
 
-    public async Task<JobTypeDto> GetJobTypeByIdAsync(int jobTypeId)
+
+    public async Task<AdminLogsDto> GetAdminLogsByIdAsync(int adminLogId)
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
-        // write the SQL query to fetch a job type by ID
+
+        // SQL query to fetch an admin log by ID
         var sql = """
-                  SELECT JobTypeId, 
-                         TypeName, 
-                         Description 
-                  FROM JobTypes
-                  WHERE JobTypeId = ?
-                  """;
+              SELECT LogId, 
+                     AdminId,
+                     ActionId, 
+                     Description,
+                     ActionDate
+              FROM AdminLogs
+              WHERE LogId = @LogId
+              """;
 
         var parameters = new DynamicParameters();
-        parameters.Add("@JobTypeId", jobTypeId, DbType.Int32);
+        parameters.Add("@LogId", adminLogId, DbType.Int32);
 
-        return await connection.QueryFirstOrDefaultAsync<JobTypeDto>(sql, parameters).ConfigureAwait(false);
+        return await connection.QueryFirstOrDefaultAsync<AdminLogsDto>(sql, parameters).ConfigureAwait(false);
+
     }
-    public async Task<ResponseDto> SubmitJobTypeAsync(JobTypeDto jobTypeDto)
+    public async Task<ResponseDto> SubmitAdminLogsAsync(AdminLogsDto adminLogsDto)
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
 
         string sql;
 
-        if (jobTypeDto.JobTypeId <= 0)
+        if (adminLogsDto.LogId <= 0)
         {
-            // Insert new job type (assumes JobTypeId is auto-incremented)
+            // Insert new log (assumes LogId is auto-incremented)
             sql = """
-            INSERT INTO JobTypes (TypeName, Description)
-            VALUES (@TypeName, @Description)
-            """;
+        INSERT INTO AdminLogs (AdminId, ActionId, Description, ActionDate)
+        VALUES (@AdminId, @ActionId, @Description, @ActionDate);
+        SELECT CAST(SCOPE_IDENTITY() AS INT);
+        """;
         }
         else
         {
-            // Update existing job type
+            // Update existing log
             sql = """
-            UPDATE JobTypes
-            SET TypeName = TypeName,
-                Description = Description
-            WHERE JobTypeId = JobTypeId
-            """;
+        UPDATE AdminLogs
+        SET 
+            AdminId = @AdminId,
+            ActionId = @ActionId,
+            Description = @Description,
+            ActionDate = @ActionDate
+        WHERE LogId = @LogId
+        """;
         }
 
         var parameters = new DynamicParameters();
-        parameters.Add("JobTypeId", jobTypeDto.JobTypeId, DbType.Int32);
-        parameters.Add("TypeName", jobTypeDto.TypeName, DbType.String);
-        parameters.Add("Description", jobTypeDto.Description, DbType.String);
+        parameters.Add("@LogId", adminLogsDto.LogId, DbType.Int32);
+        parameters.Add("@AdminId", adminLogsDto.AdminId, DbType.Int32);
+        parameters.Add("@ActionId", adminLogsDto.ActionId, DbType.Int32);
+        parameters.Add("@Description", adminLogsDto.Description, DbType.String);
+        parameters.Add("@ActionDate", adminLogsDto.ActionDate, DbType.DateTime);
 
-        var affectedRows = await connection.ExecuteAsync(sql, parameters).ConfigureAwait(false);
+        var affectedRows = 0;
+
+        if (adminLogsDto.LogId <= 0)
+        {
+            // Insert operation
+            var newId = await connection.QuerySingleAsync<int>(sql, parameters).ConfigureAwait(false);
+            affectedRows = newId > 0 ? 1 : 0;
+            adminLogsDto.LogId = newId; // Set the ID for the newly inserted record
+        }
+        else
+        {
+            // Update operation
+            affectedRows = await connection.ExecuteAsync(sql, parameters).ConfigureAwait(false);
+        }
 
         return new ResponseDto
         {
             IsSuccess = affectedRows > 0,
-            Message = affectedRows > 0 ? "Job type submitted successfully." : "Failed to submit job type."
+            Message = affectedRows > 0 ? "Admin log submitted successfully." : "Failed to submit admin log."
         };
     }
 
 
-
-    public async Task<ResponseDto> DeleteJobTypeAsync(int jobTypeId)
+    public async Task<ResponseDto> DeleteAdminLogsAsync(int logId)
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
-        // write the SQL query to delete a job type by ID
-        var sql = """DELETE FROM JobTypes WHERE JobTypeId = JobTypeId""";
+
+        // SQL query to delete an admin log by ID
+        var sql = """DELETE FROM AdminLogs WHERE LogId = @LogId""";
 
         var parameters = new DynamicParameters();
-        parameters.Add("@JobTypeId", jobTypeId, DbType.Int32);
+        parameters.Add("@LogId", logId, DbType.Int32);
 
         var affectedRows = await connection.ExecuteAsync(sql, parameters).ConfigureAwait(false);
 
@@ -102,14 +129,14 @@ public class AdminLogsService : IAdminLogsService
             return new ResponseDto
             {
                 IsSuccess = false,
-                Message = "Failed to delete job type."
+                Message = "Failed to delete admin log."
             };
         }
 
         return new ResponseDto
         {
             IsSuccess = true,
-            Message = "Job type deleted successfully."
+            Message = "Admin log deleted successfully."
         };
     }
 }
