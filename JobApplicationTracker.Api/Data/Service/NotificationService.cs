@@ -29,7 +29,7 @@ public class NotificationsService : INotificationsService
         return await connection.QueryAsync<NotificationsDto>(sql).ConfigureAwait(false);
     }
 
-    public async Task<NotificationsDto> GetNotificationsAsync(int notificationsId)
+    public async Task<NotificationsDto> GetNotificationsByIdAsync(int notificationsId)
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
