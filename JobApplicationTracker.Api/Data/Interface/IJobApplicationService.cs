@@ -6,6 +6,6 @@ public interface IJobApplicationService
 {
     Task<IEnumerable<JobApplicationDto>> GetAllJobApplicationAsync();
     Task<JobApplicationDto> GetJobApplicationByIdAsync(int jobApplicationId);
-    Task<ResponseDto> SubmitJobApplicationAsync(JobTypeDto jobApplicationDto);
+    Task<ResponseDto> SubmitJobApplicationAsync(JobApplicationDto jobApplicationDto);
     Task<ResponseDto> DeleteJobApplicationAsync(int jobApplicationId);
 }

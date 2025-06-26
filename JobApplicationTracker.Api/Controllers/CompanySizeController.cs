@@ -29,7 +29,7 @@ public class CompaniesSizeController(ICompanySizesService companyService) : Cont
 
     [HttpPost]
     [Route("/submitcompanysize")]
-    public async Task<IActionResult> SubmitCompany([FromBody] CompaniesDto companySizeDto)
+    public async Task<IActionResult> SubmitCompanySize([FromBody] CompanySizeDto companySizeDto)
     {
         if (companySizeDto == null)
         {

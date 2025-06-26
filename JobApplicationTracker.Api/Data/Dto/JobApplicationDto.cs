@@ -2,7 +2,7 @@ namespace JobApplicationTracker.Api.Data.Dto;
 
 public class JobApplicationDto
 {
-    public int ApplicationId { get; set; }
+    public int JobApplicationId { get; set; }
     public int JobId { get; set; }
     public string JobTittle { get; set; }
     public string JobSeekerId { get; set; }

@@ -2,7 +2,7 @@ using JobApplicationTracker.Api.Data.Dto;
 
 namespace JobApplicationTracker.Api.Data.Interface;
 
-public interface IAdminLogService
+public interface IAdminLogsService
 {
     Task<IEnumerable<AdminLogsDto>> GetAllAdminLogsAsync();
     Task<AdminLogsDto> GetAdminLogsByIdAsync(int adminLogId);

@@ -48,7 +48,7 @@ public class CompaniesController(ICompaniesService companyService) : ControllerB
     [Route("/deletecompany")]
     public async Task<IActionResult> DeleteCompany(int id)
     {
-        var response = await companyService.DeleteCompaniesAsync(id);
+        var response = await companyService.DeleteCompanyAsync(id);
         if (response is ResponseDto responseDto) // Ensure the response is cast to the correct type
         {
             return responseDto.IsSuccess ? Ok(responseDto) : BadRequest(responseDto);

@@ -10,6 +10,23 @@ builder.Services.AddControllers();
 
 //Register services
 builder.Services.AddScoped<IJobTypeService, JobTypeService>();
+builder.Services.AddScoped<IAdminActionService, AdminActionService>();
+builder.Services.AddScoped<IAdminLogsService, AdminLogsService>();
+builder.Services.AddScoped<ICompaniesService, CompaniesService>();
+builder.Services.AddScoped<ICompanySizesService, CompanySizeService>();
+builder.Services.AddScoped<IIndustriesService, IndustriesService>();
+builder.Services.AddScoped<IJobApplicationService, ApplicationsService>();
+builder.Services.AddScoped<IJobApplicationStatusService, ApplicationStatusService>();
+builder.Services.AddScoped<IJobSeekerExperienceService, JobSeekerExperienceService>();
+builder.Services.AddScoped<IJobSeekersEducationService, JobSeekerEducationService>();
+builder.Services.AddScoped<IJobSeekersService, JobSeekerService>();
+builder.Services.AddScoped<IJobSeekersSkillsService, JobSeekerSkillsService>();
+builder.Services.AddScoped<IJobsService, JobsService>();
+builder.Services.AddScoped<INotificationsService, NotificationsService>();
+builder.Services.AddScoped<INotificationsTypesService, NotificationTypesService>();
+builder.Services.AddScoped<ISkillsService, SkillsService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IUsersTypeService, UserTypesService>();
 
 JobApplicationTrackerConfig.ConnectionString = builder.Configuration.GetValue<string>("ConnectionString");
 

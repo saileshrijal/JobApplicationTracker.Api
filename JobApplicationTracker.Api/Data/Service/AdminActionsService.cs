@@ -11,94 +11,108 @@ namespace JobApplicationTracker.Api.Data.Service;
 
 public class AdminActionService : IAdminActionService
 {
-    public async Task<IEnumerable<AdminActionsDto>> GetAllJobTypesAsync()
+    public async Task<IEnumerable<AdminActionsDto>> GetAllAdminActionAsync()
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
 
         var sql = """
-                  SELECT ActionId, 
-                         ActionName, 
-                         Description 
-                  FROM AdminAction
-                  """;
+              SELECT ActionId, 
+                     ActionName, 
+                     Description 
+              FROM AdminAction
+              """;
 
         return await connection.QueryAsync<AdminActionsDto>(sql).ConfigureAwait(false);
     }
 
-    public async Task<AdminActionsDto> GetAdminActionByIdAsync(int adminActionsId)
+    public async Task<AdminActionsDto> GetAdminActionByIdAsync(int adminActionId)
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
-        // write the SQL query to fetch an admin actions by ID
+
+        // SQL query to fetch an admin action by ID
         var sql = """
-                  SELECT ActionId,
+              SELECT ActionId,
                      ActionName,
-                     Description,
-                     
-                  FROM AdminActions
-                  WHERE ActionId = @ActionId
-                  """;
+                     Description
+              FROM AdminActions
+              WHERE ActionId = @ActionId
+              """;
 
         var parameters = new DynamicParameters();
-        parameters.Add("@AdminActionsId", adminActionsId, DbType.Int32);
+        parameters.Add("@ActionId", adminActionId, DbType.Int32); // Corrected parameter name
 
         return await connection.QueryFirstOrDefaultAsync<AdminActionsDto>(sql, parameters).ConfigureAwait(false);
     }
-    public async Task<ResponseDto> SubmitAdminActionsAsync(AdminActionsDto adminActionsDto)
+    public async Task<ResponseDto> SubmitAdminActionAsync(AdminActionsDto adminActionDto)
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
 
         string sql;
 
-        if (adminActionsDto.ActionId <= 0)
+        if (adminActionDto.ActionId <= 0)
         {
-            // Insert new job type (assumes admin action Id is auto-incremented)
+            // Insert new admin action (assumes ActionId is auto-incremented)
             sql = """
-            INSERT INTO AdminActions (ActionName, Description)
-            VALUES (@ActionName, @Description)
-            """;
+        INSERT INTO AdminActions (ActionName, Description)
+        VALUES (@ActionName, @Description);
+        SELECT CAST(SCOPE_IDENTITY() AS INT);
+        """;
         }
         else
         {
             // Update existing admin action
             sql = """
-            UPDATE AdminActions
-            SET ActionName = ActionName,
-                Description = Description
-            WHERE ActionId = ActionId
-            """;
+        UPDATE AdminActions
+        SET 
+            ActionName = @ActionName,
+            Description = @Description
+        WHERE ActionId = @ActionId
+        """;
         }
 
         var parameters = new DynamicParameters();
-        parameters.Add("ActionId", adminActionsDto.ActionId, DbType.Int32);
-        parameters.Add("ActionName", adminActionsDto.ActionName, DbType.String);
-        parameters.Add("Description", adminActionsDto.Description, DbType.String);
+        parameters.Add("@ActionId", adminActionDto.ActionId, DbType.Int32);
+        parameters.Add("@ActionName", adminActionDto.ActionName, DbType.String);
+        parameters.Add("@Description", adminActionDto.Description, DbType.String);
 
-        var affectedRows = await connection.ExecuteAsync(sql, parameters).ConfigureAwait(false);
+        var affectedRows = 0;
+
+        if (adminActionDto.ActionId <= 0)
+        {
+            // Insert operation
+            var newId = await connection.QuerySingleAsync<int>(sql, parameters).ConfigureAwait(false);
+            affectedRows = newId > 0 ? 1 : 0;
+            adminActionDto.ActionId = newId; // Set the ID for the newly inserted record
+        }
+        else
+        {
+            // Update operation
+            affectedRows = await connection.ExecuteAsync(sql, parameters).ConfigureAwait(false);
+        }
 
         return new ResponseDto
         {
             IsSuccess = affectedRows > 0,
-            Message = affectedRows > 0 ? "Admin's action submitted successfully." : "Failed to submit Admin's actions."
+            Message = affectedRows > 0 ? "Admin action submitted successfully." : "Failed to submit admin action."
         };
     }
 
-
-
-    public async Task<ResponseDto> DeleteAsdminActionAsync(int adminActionsId)
+    public async Task<ResponseDto> DeleteAdminActionAsync(int actionId)
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
-        // write the SQL query to delete a admin action by ID
+
+        // SQL query to delete an admin action by ID
         var sql = """
-                   DELETE FROM AdminActions 
-                   WHERE ActionId = ActionId
-                  """;
+              DELETE FROM AdminActions 
+              WHERE ActionId = @ActionId
+              """;
 
         var parameters = new DynamicParameters();
-        parameters.Add("@AdminActionId", adminActionsId, DbType.Int32);
+        parameters.Add("@ActionId", actionId, DbType.Int32); // Corrected parameter name
 
         var affectedRows = await connection.ExecuteAsync(sql, parameters).ConfigureAwait(false);
 
@@ -107,14 +121,14 @@ public class AdminActionService : IAdminActionService
             return new ResponseDto
             {
                 IsSuccess = false,
-                Message = "Failed to delete admin actions."
+                Message = "Failed to delete admin action."
             };
         }
 
         return new ResponseDto
         {
             IsSuccess = true,
-            Message = "Admin actions deleted successfully."
+            Message = "Admin action deleted successfully."
         };
     }
 }

@@ -146,14 +146,14 @@ public class CompaniesService : ICompaniesService
             
         };
     }
-    public async Task<ResponseDto> DeleteCompanyAsync(int companyId)
+    public async Task<ResponseDto> DeleteCompanyAsync(int companiesId)
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
 
         // Check referential integrity first (example for JobApplications table)
         var refCheckSql = "SELECT COUNT(1) FROM JobApplications WHERE CompanyId = @CompanyId";
-        var hasDependencies = await connection.ExecuteScalarAsync<bool>(refCheckSql, new { CompanyId = companyId });
+        var hasDependencies = await connection.ExecuteScalarAsync<bool>(refCheckSql, new { CompanyId = companiesId });
 
         if (hasDependencies)
         {
@@ -168,7 +168,7 @@ public class CompaniesService : ICompaniesService
         var deleteSql = "DELETE FROM Companies WHERE CompanyId = @CompanyId";
 
         var parameters = new DynamicParameters();
-        parameters.Add("@CompanyId", companyId, DbType.Int32);
+        parameters.Add("@CompanyId", companiesId, DbType.Int32);
 
         var affectedRows = await connection.ExecuteAsync(deleteSql, parameters).ConfigureAwait(false);
 
