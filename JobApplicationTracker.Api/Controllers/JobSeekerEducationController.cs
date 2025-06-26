@@ -11,8 +11,8 @@ public class JobSeekerEducationController(IJobSeekersEducationService jobSeekers
     [Route("/getalljobseekereducation")]
     public async Task<IActionResult> GetAllJobSeekersEducation()
     {
-        var jobEdu = await jobSeekersEducationservice.GetAllJobSeekerEducationAsync();
-        return Ok(jobEdu);
+        var jobEduu = await jobSeekersEducationservice.GetAllJobSeekerEducationAsync();
+        return Ok(jobEduu);
     }
 
     [HttpGet]
