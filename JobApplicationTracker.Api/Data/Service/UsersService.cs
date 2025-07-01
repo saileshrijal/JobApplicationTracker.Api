@@ -2,10 +2,7 @@ using Dapper;
 using JobApplicationTracker.Api.Configuration;
 using JobApplicationTracker.Api.Data.Dto;
 using JobApplicationTracker.Api.Data.Interface;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
-using System.Collections.Generic;
 using System.Data;
 
 namespace JobApplicationTracker.Api.Data.Service;
@@ -60,8 +57,8 @@ public class UsersService : IUsersService
         {
             // Insert new users (assumes userId is auto-incremented)
             sql = """
-                  INSERT INTO Users (Email, PasswordHash, UserTypeId, IsAdmin, CreatedAt, UpdatedAt, IsActive)
-                  VALUES (@Email, @PasswordHash, @UserTypeId, @IsAdmin, @CreatedAt, @UpdatedAt, @IsActive)
+                  INSERT INTO Users (Email, PasswordHash, UserType, CreatedAt, UpdatedAt, IsActive)
+                  VALUES (@Email, @PasswordHash, @UserType, @CreatedAt, @UpdatedAt, @IsActive)
                   """;
         }
         else
@@ -71,20 +68,22 @@ public class UsersService : IUsersService
                     UPDATE Users
                     SET Email = @Email,
                         PasswordHash = @PasswordHash,
-                        UserTypeId = @UserTypeId,
+                        UserType = @UserType,
                         IsAdmin = @IsAdmin,
                         UpdatedAt = @UpdatedAt,
                         IsActive = @IsActive
                     WHERE UserId = @UserId
                     """;
         }
+
         var parameters = new DynamicParameters();
         parameters.Add("UserId", userDto.UserId, DbType.Int32);
         parameters.Add("Email", userDto.Email, DbType.String);
         parameters.Add("PasswordHash", userDto.PasswordHash, DbType.String);
-        parameters.Add("UserTypeId", userDto.UserTypeId, DbType.Int32);
+        parameters.Add("UserType", userDto.UserType, DbType.String);
         parameters.Add("IsAdmin", userDto.IsAdmin, DbType.Boolean);
-        parameters.Add("UpdatedAt", DateTime.UtcNow, DbType.DateTime);
+        parameters.Add("UpdatedAt", DateTime.UtcNow, DbType.DateTime); 
+        parameters.Add("CreatedAt", DateTime.UtcNow, DbType.DateTime);
         parameters.Add("IsActive", userDto.IsActive, DbType.Boolean);
 
         var affectedRows = await connection.ExecuteAsync(sql, parameters).ConfigureAwait(false);
@@ -125,6 +124,73 @@ public class UsersService : IUsersService
             IsSuccess = true,
             Message = "User deleted successfully."
         };
+    }
+
+    public async Task<ResponseDto> CreateUserAsync(SignupDto credentials)
+    {
+        var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
+        await connection.OpenAsync();
+
+        var query = 
+            @" 
+                INSERT INTO Users (Email, PasswordHash, UserTypeId, IsAdmin, CreatedAt, UpdatedAt, IsActive)
+                VALUES(@Email, @PasswordHash, @UserTypeId, @IsAdmin, @CreatedAt, @UpdatedAt, @IsActive)
+            ";
+
+
+        var parameters = new DynamicParameters();
+        //parameters.Add("UserId", userDto.UserId, DbType.Int32);
+        parameters.Add("Email", credentials.Email, DbType.String);
+        parameters.Add("PasswordHash", credentials.PasswordHash, DbType.String);
+        //parameters.Add("UserTypeId", userDto.UserTypeId, DbType.Int32);
+        //parameters.Add("IsAdmin", userDto.IsAdmin, DbType.Boolean);
+        //parameters.Add("UpdatedAt", DateTime.UtcNow, DbType.DateTime);
+        //parameters.Add("IsActive", userDto.IsActive, DbType.Boolean);
+
+        var affectedRows = await connection.ExecuteAsync(query, parameters).ConfigureAwait(false);
+
+        if (affectedRows <= 0)
+        {
+            return new ResponseDto
+            {
+                IsSuccess = false,
+                Message = "Failed to create user."
+            };
+        }
+
+        return new ResponseDto
+        {
+            IsSuccess = true,
+            Message = "User created successfully."
+        };
+    }
+
+    public async Task<bool> DoesEmailExists(string email)
+    {
+        var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
+        await connection.OpenAsync();
+
+        var query = """SELECT 1 FROM Users WHERE LOWER(Email) = LOWER(@Email)""";
+
+        var parameters = new DynamicParameters();
+        parameters.Add("@Email",email, DbType.String);
+
+        var result = await connection.ExecuteScalarAsync<int?>(query,parameters).ConfigureAwait(false);
+
+        return result.HasValue;
+    }
+
+    public async Task<UsersDto?> GetUserByEmail(string email)
+    {
+        await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
+        await connection.OpenAsync();
+
+        var query = """SELECT * FROM Users WHERE Email = @Email""";
+
+        var parameters = new DynamicParameters();
+        parameters.Add("@Email", email, DbType.String);
+
+        return await connection.QueryFirstOrDefaultAsync<UsersDto>(query,parameters).ConfigureAwait(false);
     }
 }
    

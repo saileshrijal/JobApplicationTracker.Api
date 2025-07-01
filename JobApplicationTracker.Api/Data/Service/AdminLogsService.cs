@@ -3,8 +3,6 @@ using JobApplicationTracker.Api.Configuration;
 using JobApplicationTracker.Api.Data.Dto;
 using JobApplicationTracker.Api.Data.Interface;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
 using System.Data;
 
 namespace JobApplicationTracker.Api.Data.Service;
