@@ -8,8 +8,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Controllers\CompanySizeController.cs" />
+      <Compile Remove="Data\Dto\AuthDto.cs" />
+      <Compile Remove="Data\Dto\AuthorisationDto.cs" />
+      <Compile Remove="Data\Dto\CompanySizeDto.cs" />
       <Compile Remove="Data\Dto\UserTypes.cs" />
       <Compile Remove="Data\Interface\IAsdminLogsService.cs" />
+      <Compile Remove="Data\Interface\ICompanySizesService.cs" />
+      <Compile Remove="Data\Service\CompanySizesService.cs" />
       <Compile Remove="Data\Service\JobSeekerSkills.cs" />
     </ItemGroup>
 

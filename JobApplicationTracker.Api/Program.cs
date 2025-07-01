@@ -13,7 +13,6 @@ builder.Services.AddScoped<IJobTypeService, JobTypeService>();
 builder.Services.AddScoped<IAdminActionService, AdminActionService>();
 builder.Services.AddScoped<IAdminLogsService, AdminLogsService>();
 builder.Services.AddScoped<ICompaniesService, CompaniesService>();
-builder.Services.AddScoped<ICompanySizesService, CompanySizeService>();
 builder.Services.AddScoped<IIndustriesService, IndustriesService>();
 builder.Services.AddScoped<IJobApplicationService, ApplicationsService>();
 builder.Services.AddScoped<IJobApplicationStatusService, ApplicationStatusService>();

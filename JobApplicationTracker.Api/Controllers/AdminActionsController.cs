@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JobApplicationTracker.Api.Controllers;
 
-[Route("api/AdminActions")]
+[Route("api/AdminAction")]
 public class AdminActionsController(IAdminActionService adminActionService) : ControllerBase
 {
     [HttpGet]
-    [Route("/getalladminActions")]
+    [Route("/getalladminAction")]
     public async Task<IActionResult> GetAllAdminActions()
     {
         var adminAction = await adminActionService.GetAllAdminActionAsync();

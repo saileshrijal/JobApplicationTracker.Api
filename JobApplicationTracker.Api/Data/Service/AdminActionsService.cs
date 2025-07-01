@@ -36,7 +36,7 @@ public class AdminActionService : IAdminActionService
               SELECT ActionId,
                      ActionName,
                      Description
-              FROM AdminActions
+              FROM AdminAction
               WHERE ActionId = @ActionId
               """;
 
@@ -56,16 +56,16 @@ public class AdminActionService : IAdminActionService
         {
             // Insert new admin action (assumes ActionId is auto-incremented)
             sql = """
-        INSERT INTO AdminActions (ActionName, Description)
-        VALUES (@ActionName, @Description);
-        SELECT CAST(SCOPE_IDENTITY() AS INT);
+            INSERT INTO AdminAction (ActionName, Description)
+            VALUES (@ActionName, @Description);
+            SELECT CAST(SCOPE_IDENTITY() AS INT);
         """;
         }
         else
         {
             // Update existing admin action
             sql = """
-        UPDATE AdminActions
+        UPDATE AdminAction
         SET 
             ActionName = @ActionName,
             Description = @Description
@@ -107,7 +107,7 @@ public class AdminActionService : IAdminActionService
 
         // SQL query to delete an admin action by ID
         var sql = """
-              DELETE FROM AdminActions 
+              DELETE FROM AdminAction
               WHERE ActionId = @ActionId
               """;
 

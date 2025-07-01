@@ -22,7 +22,7 @@ public class JobSeekerSkillsService : IJobSeekersSkillsService
                          ProficiencyLevel
                          
 
-                  FROM JobSeekerSkills
+                  FROM JobSeekerSkills --select * from t
                   """;
 
 
