@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace JobApplicationTracker.Api.Controllers;
 
 [Route("api/users")]
-public class UsersController(IUsersService userService) : ControllerBase
+public class UsersController(IUsersService userService, IPasswordHasherService _passwordHasher) : ControllerBase
 {
     [HttpGet]
     [Route("/getallusers")]
@@ -36,6 +36,8 @@ public class UsersController(IUsersService userService) : ControllerBase
             return BadRequest();
         }
 
+        usersDto.PasswordHash = _passwordHasher.HashPassword(usersDto.PasswordHash);
+
         var response = await userService.SubmitUsersAsync(usersDto);
         return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
@@ -47,4 +49,39 @@ public class UsersController(IUsersService userService) : ControllerBase
         var response = await userService.DeleteUsersAsync(id);
         return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
+
+    [HttpPost]
+    [Route("/signup")]
+    public async Task<IActionResult> CreateUser(SignupDto credentials)
+    {
+        if (!ModelState.IsValid)
+        {
+            ModelState.AddModelError("Error","Error occured.Please enter all credentails.");
+            return BadRequest(ModelState);
+        }
+
+        if (credentials is null)
+        {
+            return BadRequest();
+        }
+
+        // check if the user already exists
+        if (await userService.DoesEmailExists(credentials.Email))
+        {
+            return BadRequest(new ResponseDto()
+            {   
+                IsSuccess = false,
+                StatusCode = StatusCodes.Status400BadRequest,
+                Message = "The email already exists."
+            });
+        }
+
+        // hash the password
+        credentials.PasswordHash = _passwordHasher.HashPassword(credentials.PasswordHash);
+
+        // return ok response
+        var response = await userService.CreateUserAsync(credentials);
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
+    }
+    
 }

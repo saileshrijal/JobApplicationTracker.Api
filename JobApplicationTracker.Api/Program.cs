@@ -1,12 +1,52 @@
 using JobApplicationTracker.Api.Configuration;
 using JobApplicationTracker.Api.Data.Interface;
 using JobApplicationTracker.Api.Data.Service;
+using Microsoft.AspNetCore.Authentication.BearerToken;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+// authentication service
+    builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        var jwtSettings = builder.Configuration.GetSection("jwtSettings").Get<JwtSettings>();
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateActor = true,
+            ValidateIssuer = true,
+            ValidAudience = jwtSettings?.Audience,
+            ValidIssuer = jwtSettings?.Issuer,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings?.Key ?? "")),
+            ValidateIssuerSigningKey = true,
+
+            ClockSkew = TimeSpan.Zero,
+        };
+
+    })
+    .AddCookie(options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        options.AccessDeniedPath = "/";
+        options.LogoutPath = "/";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.IsEssential = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    });
 
 //Register services
 builder.Services.AddScoped<IJobTypeService, JobTypeService>();
@@ -27,6 +67,10 @@ builder.Services.AddScoped<INotificationsTypesService, NotificationTypesService>
 builder.Services.AddScoped<ISkillsService, SkillsService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IUsersTypeService, UserTypesService>();
+builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
+builder.Services.AddScoped<ICookieService,CookieService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
 
 JobApplicationTrackerConfig.ConnectionString = builder.Configuration.GetValue<string>("ConnectionString");
 
