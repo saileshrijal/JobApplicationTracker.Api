@@ -89,6 +89,7 @@ public class JobTypeService : IJobTypeService
     {
         await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
         await connection.OpenAsync();
+
         // write the SQL query to delete a job type by ID
         var sql = """DELETE FROM JobTypes WHERE JobTypeId = JobTypeId""";
 
