@@ -1,8 +1,9 @@
 ﻿using JobApplicationTracker.Api.Data.Dto;
 using JobApplicationTracker.Api.Data.Interface;
+using JobApplicationTracker.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JobApplicationTracker.Api.Controllers
+namespace JobApplicationTracker.Api.Controllers.Authentication
 {
     [Route("api/[controller]")]
     [ApiController]

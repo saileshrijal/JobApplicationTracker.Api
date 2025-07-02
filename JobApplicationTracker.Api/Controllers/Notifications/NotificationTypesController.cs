@@ -3,7 +3,7 @@ using JobApplicationTracker.Api.Data.Interface;
 using JobApplicationTracker.Api.Data.Service;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JobApplicationTracker.Api.Controllers;
+namespace JobApplicationTracker.Api.Controllers.Notifications;
 
 [Route("api/notificationTypes")]
 public class NotificationTypesController(INotificationsTypesService notificationTypesService) : ControllerBase

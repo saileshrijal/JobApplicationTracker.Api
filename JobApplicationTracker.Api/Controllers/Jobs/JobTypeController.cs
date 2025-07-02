@@ -2,7 +2,7 @@ using JobApplicationTracker.Api.Data.Dto;
 using JobApplicationTracker.Api.Data.Interface;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JobApplicationTracker.Api.Controllers;
+namespace JobApplicationTracker.Api.Controllers.Jobs;
 
 [Route("api/jobtypes")]
 public class JobTypeController(IJobTypeService jobTypeService) : ControllerBase
