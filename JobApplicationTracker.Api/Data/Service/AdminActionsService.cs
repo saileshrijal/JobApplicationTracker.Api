@@ -3,6 +3,7 @@ using Dapper;
 using JobApplicationTracker.Api.Configuration;
 using JobApplicationTracker.Api.Data.Dto;
 using JobApplicationTracker.Api.Data.Interface;
+using JobApplicationTracker.Api.Services.Interfaces;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using System.Data;
@@ -11,10 +12,15 @@ namespace JobApplicationTracker.Api.Data.Service;
 
 public class AdminActionService : IAdminActionService
 {
+    private readonly IDatabaseConnectionService _connectionService;
+
+    public AdminActionService(IDatabaseConnectionService connectionService)
+    {
+        _connectionService = connectionService;
+    }
     public async Task<IEnumerable<AdminActionsDto>> GetAllAdminActionAsync()
     {
-        await using var connection = new SqlConnection(JobApplicationTrackerConfig.ConnectionString);
-        await connection.OpenAsync();
+        await using var connection = await _connectionService.GetDatabaseConnectionAsync();
 
         var sql = """
               SELECT ActionId, 
