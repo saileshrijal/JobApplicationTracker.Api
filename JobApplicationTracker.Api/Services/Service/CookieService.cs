@@ -1,8 +1,8 @@
 ﻿using JobApplicationTracker.Api.Configuration;
-using JobApplicationTracker.Api.Data.Interface;
+using JobApplicationTracker.Api.Services.Interfaces;
 using Microsoft.Extensions.Options;
 
-namespace JobApplicationTracker.Api.Data.Service
+namespace JobApplicationTracker.Api.Services.Service
 {
     public class CookieService : ICookieService
     {

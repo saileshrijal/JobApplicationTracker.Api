@@ -39,7 +39,6 @@ public class CompaniesService : ICompaniesService
 
         var sql = """
               SELECT CompanyId,
-                     UserId,
                      CompanyName,
                      CompanyLogo,
                      IndustryId,
@@ -71,21 +70,17 @@ public class CompaniesService : ICompaniesService
             // Insert new company
             sql = """
         INSERT INTO Companies (
-            UserId,
             CompanyName, 
             CompanyLogo,
             IndustryId,
-            CompanySizeId,
             Website,
             Location,
             Description
         )
         VALUES (
-            @UserId,
             @CompanyName,
             @CompanyLogo,
             @IndustryId,
-            @CompanySizeId,
             @Website,
             @Location,
             @Description
@@ -112,12 +107,11 @@ public class CompaniesService : ICompaniesService
         }
 
         var parameters = new DynamicParameters();
-        parameters.Add("@CompanyId", companiesDto.CompanyId, DbType.Int32);
-        parameters.Add("@UserId", companiesDto.CompanyId, DbType.Int32);
+        //parameters.Add("@CompanyId", companiesDto.CompanyId, DbType.Int32);
         parameters.Add("@CompanyName", companiesDto.CompanyName, DbType.String);
         parameters.Add("@CompanyLogo", companiesDto.CompanyLogo, DbType.String);
         parameters.Add("@IndustryId", companiesDto.IndustryId, DbType.Int32);
-        parameters.Add("@CompanySizeId", companiesDto.CompanySizeId, DbType.Int32);
+        //parameters.Add("@CompanySizeId", companiesDto.CompanySizeId, DbType.Int32);
         parameters.Add("@Website", companiesDto.Website, DbType.String);
         parameters.Add("@Location", companiesDto.Location, DbType.String);
         parameters.Add("@Description", companiesDto.Description, DbType.String);

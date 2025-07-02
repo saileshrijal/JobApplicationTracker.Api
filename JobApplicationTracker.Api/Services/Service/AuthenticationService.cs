@@ -1,13 +1,13 @@
 ﻿using JobApplicationTracker.Api.Configuration;
 using JobApplicationTracker.Api.Data.Dto;
-using JobApplicationTracker.Api.Data.Interface;
+using JobApplicationTracker.Api.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace JobApplicationTracker.Api.Data.Service
+namespace JobApplicationTracker.Api.Services.Service
 {
     public class AuthenticationService : IAuthenticationService
     {

@@ -1,9 +1,9 @@
 using JobApplicationTracker.Api.Configuration;
 using JobApplicationTracker.Api.Data.Interface;
 using JobApplicationTracker.Api.Data.Service;
-using Microsoft.AspNetCore.Authentication.BearerToken;
+using JobApplicationTracker.Api.Services.Interfaces;
+using JobApplicationTracker.Api.Services.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -14,6 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.Configure<DatabaseConfig>(builder.Configuration.GetSection("DatabaseConfig"));
 
 // authentication service
     builder.Services.AddAuthentication(options =>
@@ -70,6 +71,9 @@ builder.Services.AddScoped<IUsersTypeService, UserTypesService>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<ICookieService,CookieService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+// Database service
+builder.Services.AddScoped<IDatabaseConnectionService, DatabaseConnectionService>();
 
 
 JobApplicationTrackerConfig.ConnectionString = builder.Configuration.GetValue<string>("ConnectionString");
