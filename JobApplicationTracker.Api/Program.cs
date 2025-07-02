@@ -68,10 +68,11 @@ builder.Services.AddScoped<INotificationsTypesService, NotificationTypesService>
 builder.Services.AddScoped<ISkillsService, SkillsService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IUsersTypeService, UserTypesService>();
+
+// Helper services
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<ICookieService,CookieService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-
 // Database service
 builder.Services.AddScoped<IDatabaseConnectionService, DatabaseConnectionService>();
 

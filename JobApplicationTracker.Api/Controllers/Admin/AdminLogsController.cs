@@ -2,7 +2,7 @@ using JobApplicationTracker.Api.Data.Dto;
 using JobApplicationTracker.Api.Data.Interface;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JobApplicationTracker.Api.Controllers;
+namespace JobApplicationTracker.Api.Controllers.Admin;
 
 [Route("api/AdminLogs")]
 public class AdminLogsController(IAdminLogsService adminLogService) : ControllerBase
