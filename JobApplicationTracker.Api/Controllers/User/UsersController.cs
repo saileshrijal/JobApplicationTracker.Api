@@ -1,12 +1,12 @@
-using JobApplicationTracker.Api.Data.Dto;
-using JobApplicationTracker.Api.Data.Interface;
+using JobApplicationTracke.Data.Dto;
+using JobApplicationTracke.Data.Interface;
 using JobApplicationTracker.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobApplicationTracker.Api.Controllers.User;
 
 [Route("api/users")]
-public class UsersController(IUsersService userService, IPasswordHasherService _passwordHasher) : ControllerBase
+public class UsersController(IUserRepository userService, IPasswordHasherService _passwordHasher) : ControllerBase
 {
     [HttpGet]
     [Route("/getallusers")]

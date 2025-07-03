@@ -1,12 +1,12 @@
-using JobApplicationTracker.Api.Data.Dto;
-using JobApplicationTracker.Api.Data.Interface;
+using JobApplicationTracke.Data.Dto;
+using JobApplicationTracke.Data.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobApplicationTracker.Api.Controllers.Jobs;
 
 [Route("api/jobs")]
 public class
-    JobsController(IJobsService jobsService) : ControllerBase
+    JobsController(IJobsRepository jobsService) : ControllerBase
 {
     [HttpGet]
     [Route("/getalljobs")]

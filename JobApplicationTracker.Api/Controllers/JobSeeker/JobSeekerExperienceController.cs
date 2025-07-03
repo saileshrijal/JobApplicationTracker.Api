@@ -1,11 +1,11 @@
-using JobApplicationTracker.Api.Data.Dto;
-using JobApplicationTracker.Api.Data.Interface;
+using JobApplicationTracke.Data.Dto;
+using JobApplicationTracke.Data.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobApplicationTracker.Api.Controllers.JobSeeker;
 
 [Route("api/jobseekerexperience")]
-public class JobSeekerExperienceController(IJobSeekerExperienceService jobSeekersExperienceService) : ControllerBase
+public class JobSeekerExperienceController(IJobSeekerExperienceRepository jobSeekersExperienceService) : ControllerBase
 {
     [HttpGet]
     [Route("/getalljobseekerexperience")]

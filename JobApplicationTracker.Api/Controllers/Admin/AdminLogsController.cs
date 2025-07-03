@@ -1,17 +1,17 @@
-using JobApplicationTracker.Api.Data.Dto;
-using JobApplicationTracker.Api.Data.Interface;
+using JobApplicationTracke.Data.Dto;
+using JobApplicationTracke.Data.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobApplicationTracker.Api.Controllers.Admin;
 
 [Route("api/AdminLogs")]
-public class AdminLogsController(IAdminLogsService adminLogService) : ControllerBase
+public class AdminLogsController(IAdminLogsRepository adminLogRepository) : ControllerBase
 {
     [HttpGet]
     [Route("/getallAdminLogs")]
     public async Task<IActionResult> GetAllAdminLogs()
     {
-        var adminLog = await adminLogService.GetAllAdminLogsAsync();
+        var adminLog = await adminLogRepository.GetAllAdminLogsAsync();
         return Ok(adminLog);
     }
 
@@ -19,7 +19,7 @@ public class AdminLogsController(IAdminLogsService adminLogService) : Controller
     [Route("/getadminLogsbyid")]
     public async Task<IActionResult> GetAdminLogsById(int id)
     {
-        var adminLog = await adminLogService.GetAdminLogsByIdAsync(id);
+        var adminLog = await adminLogRepository.GetAdminLogsByIdAsync(id);
         if (adminLog == null)
         {
             return NotFound();
@@ -36,7 +36,7 @@ public class AdminLogsController(IAdminLogsService adminLogService) : Controller
             return BadRequest();
         }
 
-        var response = await adminLogService.SubmitAdminLogsAsync(adminLogsDto);
+        var response = await adminLogRepository.SubmitAdminLogsAsync(adminLogsDto);
         return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
 
@@ -44,7 +44,7 @@ public class AdminLogsController(IAdminLogsService adminLogService) : Controller
     [Route("/deleteAdminLog")]
     public async Task<IActionResult> DeleteAdminLog(int id)
     {
-        var response = await adminLogService.DeleteAdminLogsAsync(id);
+        var response = await adminLogRepository.DeleteAdminLogsAsync(id);
         return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
 }

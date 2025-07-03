@@ -1,11 +1,11 @@
-using JobApplicationTracker.Api.Data.Dto;
-using JobApplicationTracker.Api.Data.Interface;
+using JobApplicationTracke.Data.Dto;
+using JobApplicationTracke.Data.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobApplicationTracker.Api.Controllers.Company;
 
 [Route("api/companyies")]
-public class CompaniesController(ICompaniesService companyService) : ControllerBase
+public class CompaniesController(ICompaniesRepository companyService) : ControllerBase
 {
     [HttpGet]
     [Route("/getallcompanies")]

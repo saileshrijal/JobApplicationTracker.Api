@@ -1,12 +1,12 @@
-using JobApplicationTracker.Api.Data.Dto;
-using JobApplicationTracker.Api.Data.Interface;
+using JobApplicationTracke.Data.Dto;
+using JobApplicationTracke.Data.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobApplicationTracker.Api.Controllers.Industry;
 
 [Route("api/industries")]
 public class
-    IndustriesController(IIndustriesService industriesService) : ControllerBase
+    IndustriesController(IIndustriesRepository industriesService) : ControllerBase
 {
     [HttpGet]
     [Route("/getallindustries")]

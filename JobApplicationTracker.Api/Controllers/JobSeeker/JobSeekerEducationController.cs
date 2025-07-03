@@ -1,17 +1,17 @@
-using JobApplicationTracker.Api.Data.Dto;
-using JobApplicationTracker.Api.Data.Interface;
+using JobApplicationTracke.Data.Dto;
+using JobApplicationTracke.Data.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobApplicationTracker.Api.Controllers.JobSeeker;
 
 [Route("api/jobseekereducation")]
-public class JobSeekerEducationController(IJobSeekersEducationService jobSeekersEducationservice) : ControllerBase
+public class JobSeekerEducationController(IJobSeekersEducationRepository jobSeekersEducationRepository) : ControllerBase
 {
     [HttpGet]
     [Route("/getalljobseekereducation")]
     public async Task<IActionResult> GetAllJobSeekersEducation()
     {
-        var jobEduu = await jobSeekersEducationservice.GetAllJobSeekerEducationAsync();
+        var jobEduu = await jobSeekersEducationRepository.GetAllJobSeekerEducationAsync();
         return Ok(jobEduu);
     }
 
@@ -19,7 +19,7 @@ public class JobSeekerEducationController(IJobSeekersEducationService jobSeekers
     [Route("/getjobseekereducation")]
     public async Task<IActionResult> GetJobSeekerEducationsById(int id)
     {
-        var jobSeekerEdu= await jobSeekersEducationservice.GetJobSeekerEducationByIdAsync(id);
+        var jobSeekerEdu= await jobSeekersEducationRepository.GetJobSeekerEducationByIdAsync(id);
         if (jobSeekerEdu == null)
         {
             return NotFound();
@@ -36,7 +36,7 @@ public class JobSeekerEducationController(IJobSeekersEducationService jobSeekers
             return BadRequest();
         }
 
-        var response = await jobSeekersEducationservice.SubmitJobSeekerEducationAsync(jobSeekerEducationDto);
+        var response = await jobSeekersEducationRepository.SubmitJobSeekerEducationAsync(jobSeekerEducationDto);
         return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
 
@@ -44,7 +44,7 @@ public class JobSeekerEducationController(IJobSeekersEducationService jobSeekers
     [Route("/deletejobseekereducation")]
     public async Task<IActionResult> DeleteJobSeekerEducation(int id)
     {
-        var response = await jobSeekersEducationservice.DeleteJobSeekerEducationAsync(id);
+        var response = await jobSeekersEducationRepository.DeleteJobSeekerEducationAsync(id);
         return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
 }

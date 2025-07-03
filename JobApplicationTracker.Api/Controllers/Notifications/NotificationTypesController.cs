@@ -1,12 +1,12 @@
-using JobApplicationTracker.Api.Data.Dto;
-using JobApplicationTracker.Api.Data.Interface;
+using JobApplicationTracke.Data.Dto;
+using JobApplicationTracke.Data.Interface;
 using JobApplicationTracker.Api.Data.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobApplicationTracker.Api.Controllers.Notifications;
 
 [Route("api/notificationTypes")]
-public class NotificationTypesController(INotificationsTypesService notificationTypesService) : ControllerBase
+public class NotificationTypesController(INotificationsTypesRepository notificationTypesService) : ControllerBase
 {
     [HttpGet]
     [Route("/getallnotificationTypes")]
