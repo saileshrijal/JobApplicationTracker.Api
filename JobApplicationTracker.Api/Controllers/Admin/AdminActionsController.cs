@@ -1,11 +1,11 @@
-using JobApplicationTracker.Api.Data.Dto;
-using JobApplicationTracker.Api.Data.Interface;
+using JobApplicationTracke.Data.Dto;
+using JobApplicationTracke.Data.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobApplicationTracker.Api.Controllers.Admin;
 
 [Route("api/AdminActions")]
-public class AdminActionsController(IAdminActionService adminActionService) : ControllerBase
+public class AdminActionsController(IAdminActionRepository adminActionService) : ControllerBase
 {
     [HttpGet]
     [Route("/getalladminActions")]

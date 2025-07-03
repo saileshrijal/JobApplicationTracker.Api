@@ -1,5 +1,5 @@
-﻿using JobApplicationTracker.Api.Data.Dto;
-using JobApplicationTracker.Api.Data.Interface;
+﻿using JobApplicationTracke.Data.Dto;
+using JobApplicationTracke.Data.Interface;
 using JobApplicationTracker.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +7,7 @@ namespace JobApplicationTracker.Api.Controllers.Authentication
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController(IUsersService _usersService, ICookieService _cookieService, 
+    public class AuthController(IUserRepository _usersService, ICookieService _cookieService, 
         IAuthenticationService _authenticationService) : ControllerBase
     {
         [HttpPost]

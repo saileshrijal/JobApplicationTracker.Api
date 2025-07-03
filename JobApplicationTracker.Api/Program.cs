@@ -1,23 +1,21 @@
 using JobApplicationTracker.Api.Configuration;
-using JobApplicationTracker.Api.Data.Interface;
-using JobApplicationTracker.Api.Data.Service;
 using JobApplicationTracker.Api.Services.Interfaces;
 using JobApplicationTracker.Api.Services.Service;
+using JobApplicationTracker.Service.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using JobApplicationTracker.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("jwtSettings"));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-builder.Services.Configure<DatabaseConfig>(builder.Configuration.GetSection("DatabaseConfig"));
-
 // authentication service
-    builder.Services.AddAuthentication(options =>
+builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     })
@@ -49,33 +47,15 @@ builder.Services.Configure<DatabaseConfig>(builder.Configuration.GetSection("Dat
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 
-//Register services
-builder.Services.AddScoped<IJobTypeService, JobTypeService>();
-builder.Services.AddScoped<IAdminActionService, AdminActionService>();
-builder.Services.AddScoped<IAdminLogsService, AdminLogsService>();
-builder.Services.AddScoped<ICompaniesService, CompaniesService>();
-builder.Services.AddScoped<ICompanySizesService, CompanySizeService>();
-builder.Services.AddScoped<IIndustriesService, IndustriesService>();
-builder.Services.AddScoped<IJobApplicationService, ApplicationsService>();
-builder.Services.AddScoped<IJobApplicationStatusService, ApplicationStatusService>();
-builder.Services.AddScoped<IJobSeekerExperienceService, JobSeekerExperienceService>();
-builder.Services.AddScoped<IJobSeekersEducationService, JobSeekerEducationService>();
-builder.Services.AddScoped<IJobSeekersService, JobSeekerService>();
-builder.Services.AddScoped<IJobSeekersSkillsService, JobSeekerSkillsService>();
-builder.Services.AddScoped<IJobsService, JobsService>();
-builder.Services.AddScoped<INotificationsService, NotificationsService>();
-builder.Services.AddScoped<INotificationsTypesService, NotificationTypesService>();
-builder.Services.AddScoped<ISkillsService, SkillsService>();
-builder.Services.AddScoped<IUsersService, UsersService>();
-builder.Services.AddScoped<IUsersTypeService, UserTypesService>();
 
-// Helper services
+
+// Add service layer dependency
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<ICookieService,CookieService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-// Database service
-builder.Services.AddScoped<IDatabaseConnectionService, DatabaseConnectionService>();
 
+// Callng the extension method to register all services from Service and Data layers
+builder.Services.AddServiceLayer(builder.Configuration);
 
 JobApplicationTrackerConfig.ConnectionString = builder.Configuration.GetValue<string>("ConnectionString");
 

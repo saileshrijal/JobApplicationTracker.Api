@@ -1,11 +1,11 @@
-using JobApplicationTracker.Api.Data.Dto;
-using JobApplicationTracker.Api.Data.Interface;
+using JobApplicationTracke.Data.Dto;
+using JobApplicationTracke.Data.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobApplicationTracker.Api.Controllers.Skills;
 
 [Route("api/skills")]
-public class SkillsController(ISkillsService skillService) : ControllerBase
+public class SkillsController(ISkillsRepository skillService) : ControllerBase
 {
     [HttpGet]
     [Route("/getallskills")]

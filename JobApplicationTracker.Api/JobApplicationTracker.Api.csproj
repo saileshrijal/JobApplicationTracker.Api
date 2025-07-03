@@ -8,12 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Data\Dto\UserTypes.cs" />
-      <Compile Remove="Data\Interface\IAsdminLogsService.cs" />
-      <Compile Remove="Data\Service\JobSeekerSkills.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="Dapper" Version="2.1.66" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.15" />
@@ -26,6 +20,10 @@
         </PackageReference>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.12.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Services\JobApplicationTracker.Service.csproj" />
     </ItemGroup>
 
 </Project>
